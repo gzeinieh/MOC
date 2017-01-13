@@ -1,0 +1,804 @@
+/**
+ * Populate DB with sample data on server start
+ * to disable, edit config/environment/index.js, and set `seedDB: false`
+ *
+ * This seed uses JavaScript asyhnchronus promises, therefore the database
+ * tables are seeded simultaneously.  Because database relations exist,
+ * the sleep function is used to seed parent tables first, then children to avoid
+ * foreign key dependency errors.  Keep this in mind when adding tables.
+ */
+
+'use strict';
+import sqldb from '../sqldb';
+const Bus = sqldb.Bus;
+const Command = sqldb.Command;
+const Command_status = sqldb.Command_status;
+const Groundstation = sqldb.Groundstation;
+const Groundstation_radio = sqldb.Groundstation_radio;
+const Mission = sqldb.Mission;
+const Pass = sqldb.Pass;
+const Radio = sqldb.Radio;
+const Satellite = sqldb.Satellite;
+const Satellite_radio = sqldb.Satellite_radio;
+const Segment = sqldb.Segment;
+const Segment_command = sqldb.segment_command;
+const Sensor = sqldb.Sensor;
+const Sensor_type = sqldb.Sensor_type;
+const User = sqldb.User;
+const Acc793 = sqldb.Acc793;
+const Mag3110 = sqldb.Mag3110;
+
+
+// Sleep timer function (in milliseconds)
+// Useful to sequence asyhnchronus functions
+function sleep(time) {
+    return new Promise(resolve => {
+        setTimeout(resolve, time)
+    })
+}
+
+// Populate Missions Table
+Mission.sync()
+	.then(() => {
+	  return Mission.destroy({where: {}});
+	})
+	.then(() => {
+	  Mission.bulkCreate([
+		{
+	  _id: 1,
+      name: 'LAICE',
+      additionalInfo: 'Is a Satellite',
+      leadInstitution: 'University of Illinois',
+      primaryInvestigator: 'Dr. Alex Ghosh',
+      startDate: '2016-10-15 9:03:57',
+      endDate: '2016-10-16 10:07:00',
+      active: 1
+    },
+    {
+      _id: 2,
+      name: 'CubeSail',
+      additionalInfo: 'consists of 2 sub-satellites',
+      leadInstitution: 'University of Illinois',
+      primaryInvestigator: 'Dr. Alex Ghosh',
+      startDate: '2016-12-5 21:00:34',
+      endDate: '2017-3-25 7:08:59',
+      active: 1
+    },
+    {
+      _id: 3,
+      name: 'Sassi^2',
+      additionalInfo: 'Aerothermal Spectrometer',
+      leadInstitution: 'University of Illinois',
+      primaryInvestigator: 'Dr. Alex Ghosh',
+      startDate: '2017-08-13 9:59:57',
+      endDate: '2018-10-27 23:17:10',
+      active: 1
+    },
+    {
+      _id: 4,
+      name: 'CAPSat',
+      additionalInfo: 'Cooling, Annealing, and Pointing Satellite',
+      leadInstitution: 'University of Illinois',
+      primaryInvestigator: 'Dr. Alex Ghosh',
+      startDate: '2017-11-24 12:34:22',
+      endDate: '2017-12-25 21:00:00',
+      active: 1
+    },
+    {
+      _id: 5,
+      name: 'SpaceICE',
+      additionalInfo: 'Freeze-casting material manipulation experiment',
+      leadInstitution: 'University of Illinois',
+      primaryInvestigator: 'Dr. Alex Ghosh',
+      startDate: '2018-01-16 17:48:45',
+      endDate: '2018-07-12 00:00:01',
+      active: 1
+    }
+
+	  ]);
+	  return null;
+	})
+
+// Populate Users Table
+sleep(1000).then(() => {
+  User.sync()
+    .then(function() {
+      return User.destroy({ where: {} });
+    })
+    .then(function() {
+      User.bulkCreate([
+      {
+        _id: 1,
+		provider: 'local',
+		password: 'test',
+        name: 'Tom Jones',
+        projectRole: 'Lead Dev',
+        email: 'test@example.com',
+        phoneNumber: '111-354-7875',
+        organization: 'Nasa',
+        requiresApproval: 0
+      },
+      {
+        _id: 2,
+		provider: 'local',
+		password: 'admin',
+		role: 'admin',
+        name: 'Alex Ghosh',
+        projectRole: 'Project Lead',
+        email: 'admin@example.com',
+        phoneNumber: '469-793-6413',
+        organization: 'UIUC',
+        requiresApproval: 0
+      }
+	  ]);
+   })
+   return null;
+})
+
+// Populate Pass Table
+sleep(2000).then(() => {
+	Pass.sync()
+	.then(() => {
+	  return Pass.destroy({where: {}});
+	})
+	.then(() => {
+	  Pass.bulkCreate([
+		{
+		  _id: 1,
+		  startTime: '2016-10-15 10:30:30',
+		  endTime: '2016-12-15 10:30:30',
+		  MissionId: 1
+		},
+		{
+		  _id: 2,
+		  startTime: '2017-01-12 17:24:03',
+		  endTime: '2017-03-15 12:52:53',
+		  MissionId: 2
+		},
+		{
+		  _id: 3,
+		  startTime: '2017-04-01 21:32:09',
+		  endTime: '2017-06-23 10:14:29',
+		  MissionId: 3
+    }
+	  ]);
+	})
+	return null;
+})
+
+// Populate Segment Table
+sleep(3000).then(() => {
+	Segment.sync()
+	.then(() => {
+	  return Segment.destroy({where: {}});
+	})
+	.then(() => {
+	  Segment.bulkCreate([
+		{
+		  _id: 1,
+		  startTime: '2016-11-15 10:30:30',
+		  endTime: '2016-11-16 10:30:30',
+		  PassId: 1
+		},
+		{
+		  _id: 2,
+		  startTime: '2017-02-13 11:12:34',
+		  endTime: '2017-02-14 11:12:34',
+		  PassId: 2
+		},
+		{
+		  _id: 3,
+		  startTime: '2017-05-17 21:12:58',
+		  endTime: '2017-05-18 21:12:58',
+		  PassId: 3
+		}
+	  ]);
+	})
+	return null;
+})
+
+// Populate Bus Table
+sleep(4000).then(() => {
+  Bus.sync()
+    .then(() => {
+      return Bus.destroy({ where: {} });
+    })
+    .then(() => {
+      Bus.bulkCreate([
+        {
+          _id: 1,
+          name: 'Illinisat 2',
+          cpu: 'Example CPU',
+          ram: 'Example RAM',
+          storageCapacity: '100 GB',
+          linuxKernelVersion: 'Example Linux Kernel'
+        },
+        {
+          _id: 2,
+          name: 'Illinisat 3',
+          cpu: 'Example CPU 2',
+          ram: 'Example RAM 2',
+          storageCapacity: '125 GB',
+          linuxKernelVersion: 'Example Linux Kernel 2'
+         }
+      ]);
+    })
+	return null;
+})
+
+// Populate Groundstation Table
+.then(() => {
+	Groundstation.sync()
+	.then(() => {
+	  return Groundstation.destroy({where: {}});
+	})
+	.then(() => {
+	  Groundstation.bulkCreate([
+		{
+		  _id: 1,
+		  name: 'UIUC',
+		  location: '306 N Wright St, Urbana, IL 61801',
+		  primaryContact: 'Tom Davis',
+		  priContactEmail: 'test@aol.com',
+		  priContactPhone: '773-654-7777',
+		  secondaryContact: 'Jim Smith',
+		  secContactEmail: 'test2@gmail.com',
+		  secContactPhone: '887-952-556',
+		  latitude: 40.0,
+		  longitude: -88.0
+		},
+		{
+		  _id: 2,
+		  name: 'Wallops',
+		  location: 'Chincoteague Island, VA 23336',
+		  primaryContact: 'Larry Johnsson',
+		  priContactEmail: 'test3@gmail.com',
+		  priContactPhone: '123-456-7891',
+		  secondaryContact: 'Test Name',
+		  secContactEmail: 'test4@gmail.com',
+		  secContactPhone: '988-1111-1346',
+		  latitude: 38.5,
+		  longitude: -75.47
+		},
+		{
+		  _id: 3,
+		  name: 'VT',
+		  location: 'Blacksburg, VA 24061',
+		  primaryContact: 'David Thompson',
+		  priContactEmail: 'thompson@gmail.com',
+		  priContactPhone: '654-444-1234',
+		  secondaryContact: 'Davod Larry',
+		  secContactEmail: 'larry@hotmail.net',
+		  secContactPhone: '779-498-1245',
+		  latitude: 37.22,
+		  longitude: -80.42
+		}
+	  ]);
+	})
+	return null;
+})
+
+// Populate Satellite Table
+sleep(5000).then(() => {
+  Satellite.sync()
+    .then(() => {
+      return Satellite.destroy({ where: {} });
+    })
+    .then(() => {
+      Satellite.bulkCreate([
+        {
+          _id: 1,
+          name: 'LAICE',
+          dateCreated: '2016-10-15 8:53:27' ,
+          size: '3U',
+		  MissionId: 1,
+		  BusId: 1
+        },
+        {
+          _id: 2,
+          name: 'Sassi^2',
+          dateCreated: '2016-11-17 12:32:58',
+          size: '3U',
+		  MissionId: 3,
+		  BusId: 1
+        },
+        {
+          _id: 3,
+          name: 'CAPSat',
+          dateCreated: '2016-12-25 21:12:01',
+          size: '2U',
+		  MissionId: 4,
+		  BusId: 1
+        },
+        {
+          _id: 4,
+          name: 'SpaceICE',
+          dateCreated: '2017-01-01 11:01:01',
+          size: '3U',
+		  MissionId: 5,
+		  BusId: 1
+        },
+        {
+          _id: 5,
+          name: 'CubeSail',
+          dateCreated: '2017-02-13 23:59:59',
+          size: '6U',
+		  MissionId: 2,
+		  BusId: 1
+        }
+      ]);
+	})
+	return null;
+})
+// Populate Sensor_type Table
+sleep(1000).then(() => {
+  Sensor_type.sync()
+    .then(() => {
+      return Sensor_type.destroy({ where: {} });
+    })
+    .then(() => {
+      Sensor_type.bulkCreate([
+        {
+          _id: 1,
+          name: 'High Accuracy, 3D Magnetometer ',
+		  manufacturer: 'NXP',
+		  model: 'MAG3110',
+		  type: 'Magnetometer'
+        },
+        {
+          _id: 2,
+          name: 'Premium Grade Top Mount Accelerometer',
+		  manufacturer: 'Omega',
+		  model: 'ACC793',
+		  type: 'Accelerometer'
+        }
+      ]);
+    })
+	return null;
+})
+// Populate Sensor Table
+sleep(6000).then(() => {
+  Sensor.sync()
+    .then(() => {
+      return Sensor.destroy({ where: {} });
+    })
+    .then(() => {
+      Sensor.bulkCreate([
+        {
+          _id: 1,
+          threshold: 0,
+          createdAt: Date.now(),
+          updatedAt: Date.now(),
+		  SatelliteId: 1,
+		  SensorTypeId: 1
+        },
+        {
+          _id: 2,
+          threshold: 0,
+          createdAt: Date.now(),
+          updatedAt: Date.now(),
+		  SatelliteId: 2,
+		  SensorTypeId: 2
+        }
+      ]);
+    })
+	return null;
+})
+
+// Populate Command Table
+.then(() => {
+  Command.sync()
+    .then(() => {
+      return Command.destroy({ where: {} });
+    })
+    .then(() => {
+	  Command.bulkCreate([
+        {
+          _id: 1,
+          body: 'Launch Missle',
+		  dateCreated: '2016-12-15 10:30:30'
+        },
+        {
+          _id: 2,
+          body: 'Spy on Russians',
+		  dateCreated: '2016-11-15 10:30:30'
+        },
+		{
+          _id: 3,
+          body: 'Downlink Science Data',
+		  dateCreated: '2017-02-15 10:30:30'
+        }
+      ]);
+    })
+	return null;
+})
+
+// Populate Command_status table
+sleep(6500).then(() => {
+  Command_status.sync()
+    .then(() => {
+      return Command_status.destroy({ where: {} });
+    })
+    .then(() => {
+      Command_status.bulkCreate([
+        {
+          _id: 1,
+          status: 'Pending',
+          scheduledSendTime: '2016-11-12 14:16:59',
+          approved: 1,
+          CommandId: 1,
+          UserId: 1,
+		  ApprovedByUserId: 2
+        },
+        {
+          _id: 2,
+          status: 'Sent to Satellite',
+          scheduledSendTime: '2016-12-12 14:15:59',
+          approved: 1,
+          CommandId: 2,
+          UserId: 2,
+		  ApprovedByUserId: 2
+        },
+        {
+          _id: 3,
+          status: 'Failed',
+		  scheduledSendTime: '2017-09-17 21:12:01',
+          approved: 0,
+          CommandId: 3,
+          UserId: 2,
+		  ApprovedByUserId: 2
+        }
+        ]);
+      }
+    )
+	return null;
+})
+
+// Populate Groundstation_radio table
+sleep(5000).then(() => {
+  Groundstation_radio.sync()
+    .then(() => {
+      return Groundstation_radio.destroy({ where: {} });
+    })
+    .then(() => {
+      Groundstation_radio.bulkCreate([
+        {
+          _id: 1,
+          name: 'Lithium 1',
+          model: 'Lithium 1 UHF/VHF Radio',
+          manufacturer: 'Astronautical Development, LLC',
+          type: 'UHF / VHF',
+          frequency: '450 Mhz',
+		      dataRate: '9.6 kbps',
+		      GroundstationId: 1
+        },
+        {
+          _id: 2,
+          name: 'Beryllium 2',
+          model: 'Beryllium 2 S-Band Transceiver',
+          manufacturer: 'Astronautical Development, LLC',
+          type: 'UHF / SHF',
+          frequency: '2.5 Ghz',
+		      dataRate: '2.0 Mbps',
+		      GroundstationId: 2
+        }
+        ]);
+      }
+    )
+	return null;
+})
+
+// Populate Satellite_radio table
+sleep(6000).then(() => {
+  Satellite_radio.sync()
+    .then(() => {
+      return Satellite_radio.destroy({ where: {} });
+    })
+    .then(() => {
+      Satellite_radio.bulkCreate([
+        {
+          _id: 1,
+          name: 'Lithium 1',
+          model: 'Lithium 1 UHF/VHF Radio',
+          manufacturer: 'Astronautical Development, LLC',
+          type: 'UHF / VHF',
+          frequency: '450 Mhz',
+		      dataRate: '9.6kbps',
+		      SatelliteId: 1
+        },
+        {
+          _id: 2,
+          name: 'Beryllium 2',
+          model: 'Beryllium 2 S-Band Transceiver',
+          manufacturer: 'Astronautical Development, LLC',
+          type: 'UHF / SHF',
+          frequency: '2.5 GHz',
+		      dataRate: '2.0 Mbps',
+		      SatelliteId: 2
+        }
+        ]);
+      }
+    )
+	return null;
+})
+
+// Populate acc793 sensor table
+sleep(7000).then(() => {
+  Acc793.sync()
+    .then(() => {
+      return Acc793.destroy({ where: {} });
+    })
+    .then(() => {
+      Acc793.bulkCreate([
+        {
+          _id: 1,
+          createdAt: Date.now(),
+		  x_value: '55.0',
+		  y_value: '66.0',
+		  z_value: '77.0',
+		  SatelliteId: 1,
+		  SensorId:  2
+		  
+        },
+       {
+          _id: 2,
+          createdAt: Date.now(),
+		  x_value: '55.0',
+		  y_value: '66.0',
+		  z_value: '77.0',
+		  SatelliteId: 1,
+		  SensorId: 2
+        },
+		{
+          _id: 3,
+          createdAt: Date.now(),
+		  x_value: '55.0',
+		  y_value: '66.0',
+		  z_value: '77.0',
+		  SatelliteId: 1,
+		  SensorId:  2
+		  
+        },
+		{
+          _id: 4,
+          createdAt: Date.now(),
+		  x_value: '55.0',
+		  y_value: '66.0',
+		  z_value: '77.0',
+		  SatelliteId: 2,
+		  SensorId:  2
+		  
+        },
+       {
+          _id: 5,
+          createdAt: Date.now(),
+		  x_value: '55.0',
+		  y_value: '66.0',
+		  z_value: '77.0',
+		  SatelliteId: 2,
+		  SensorId: 2
+        },
+		{
+          _id: 6,
+          createdAt: Date.now(),
+		  x_value: '55.0',
+		  y_value: '66.0',
+		  z_value: '77.0',
+		  SatelliteId: 2,
+		  SensorId:  2
+		  
+        },
+		{
+          _id: 7,
+          createdAt: Date.now(),
+		  x_value: '55.0',
+		  y_value: '66.0',
+		  z_value: '77.0',
+		  SatelliteId: 3,
+		  SensorId:  2
+		  
+        },
+       {
+          _id: 8,
+          createdAt: Date.now(),
+		  x_value: '55.0',
+		  y_value: '66.0',
+		  z_value: '77.0',
+		  SatelliteId: 3,
+		  SensorId: 2
+        },
+		{
+          _id: 9,
+          createdAt: Date.now(),
+		  x_value: '55.0',
+		  y_value: '66.0',
+		  z_value: '77.0',
+		  SatelliteId: 3,
+		  SensorId:  2
+        },
+		{
+          _id: 10,
+          createdAt: Date.now(),
+		  x_value: '55.0',
+		  y_value: '66.0',
+		  z_value: '77.0',
+		  SatelliteId: 4,
+		  SensorId:  2
+		  
+        },
+       {
+          _id: 11,
+          createdAt: Date.now(),
+		  x_value: '55.0',
+		  y_value: '66.0',
+		  z_value: '77.0',
+		  SatelliteId: 4,
+		  SensorId: 2
+        },
+		{
+          _id: 12,
+          createdAt: Date.now(),
+		  x_value: '55.0',
+		  y_value: '66.0',
+		  z_value: '77.0',
+		  SatelliteId: 4,
+		  SensorId:  2
+        },
+		{
+          _id: 13,
+          createdAt: Date.now(),
+		  x_value: '55.0',
+		  y_value: '66.0',
+		  z_value: '77.0',
+		  SatelliteId: 5,
+		  SensorId:  2
+		  
+        },
+       {
+          _id: 14,
+          createdAt: Date.now(),
+		  x_value: '55.0',
+		  y_value: '66.0',
+		  z_value: '77.0',
+		  SatelliteId: 5,
+		  SensorId: 2
+        },
+		{
+          _id: 15,
+          createdAt: Date.now(),
+		  x_value: '55.0',
+		  y_value: '66.0',
+		  z_value: '77.0',
+		  SatelliteId: 5,
+		  SensorId:  2
+        }
+        ]);
+      }
+    )
+	return null;
+})
+
+// Populate mag3110 sensor table
+sleep(7000).then(() => {
+  Mag3110.sync()
+    .then(() => {
+      return Mag3110.destroy({ where: {} });
+    })
+    .then(() => {
+      Mag3110.bulkCreate([
+        {
+          _id: 1,
+          createdAt: Date.now(),
+		  sensorReading: '11.1',
+		  SatelliteId: 1,
+		  SensorId:  1
+		  
+        },
+       {
+          _id: 2,
+          createdAt: Date.now(),
+		  sensorReading: '11.1',
+		  SatelliteId: 1,
+		  SensorId: 1
+        },
+		{
+          _id: 3,
+          createdAt: Date.now(),
+		  sensorReading: '11.1',
+		  SatelliteId: 1,
+		  SensorId:  1
+		  
+        },
+		{
+          _id: 4,
+          createdAt: Date.now(),
+		  sensorReading: '11.1',
+		  SatelliteId: 2,
+		  SensorId:  1
+		  
+        },
+       {
+          _id: 5,
+          createdAt: Date.now(),
+		  sensorReading: '11.1',
+		  SatelliteId: 2,
+		  SensorId: 1
+        },
+		{
+          _id: 6,
+          createdAt: Date.now(),
+		  sensorReading: '11.1',
+		  SatelliteId: 2,
+		  SensorId:  1
+		  
+        },
+		{
+          _id: 7,
+          createdAt: Date.now(),
+		  sensorReading: '11.1',
+		  SatelliteId: 3,
+		  SensorId:  1
+		  
+        },
+       {
+          _id: 8,
+          createdAt: Date.now(),
+		  sensorReading: '11.1',
+		  SatelliteId: 3,
+		  SensorId: 1
+        },
+		{
+          _id: 9,
+          createdAt: Date.now(),
+		  sensorReading: '11.1',
+		  SatelliteId: 3,
+		  SensorId:  1
+        },
+		{
+          _id: 10,
+          createdAt: Date.now(),
+		  sensorReading: '11.1',
+		  SatelliteId: 4,
+		  SensorId:  1
+		  
+        },
+       {
+          _id: 11,
+          createdAt: Date.now(),
+		  sensorReading: '11.1',
+		  SatelliteId: 4,
+		  SensorId: 1
+        },
+		{
+          _id: 12,
+          createdAt: Date.now(),
+		  sensorReading: '11.1',
+		  SatelliteId: 4,
+		  SensorId:  1
+        },
+		{
+          _id: 13,
+          createdAt: Date.now(),
+		  sensorReading: '11.1',
+		  SatelliteId: 5,
+		  SensorId:  1
+        },
+       {
+          _id: 14,
+          createdAt: Date.now(),
+		  sensorReading: '11.1',
+		  SatelliteId: 5,
+		  SensorId: 1
+        },
+		{
+          _id: 15,
+          createdAt: Date.now(),
+		  sensorReading: '11.1',
+		  SatelliteId: 5,
+		  SensorId:  1
+        }
+        ]);
+      }
+    )
+	return null;
+})

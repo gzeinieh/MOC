@@ -1,0 +1,24 @@
+'use strict';
+
+import {User} from '../../sqldb';
+
+
+module.exports = function(sequelize, DataTypes) {
+  let Command = sequelize.define('Command', {
+    _id: {
+      type: DataTypes.INTEGER,
+      allowNull: false,
+      primaryKey: true,
+      autoIncrement: true
+    },
+    body: DataTypes.STRING,
+    dateSubmitted: { type: DataTypes.DATE, defaultValue: DataTypes.NOW },
+    scheduledSendTime: DataTypes.DATE,
+    status: DataTypes.STRING,
+    approvalStatus: DataTypes.STRING
+  });
+
+
+
+  return Command;
+};

@@ -1,0 +1,41 @@
+navbar
+.container-fluid
+
+  h1.page-header Segments
+  form.form-inline
+    .form-group
+      label(for='selectedGroundstation') Ground Station
+      select.form-control(ng-model='selectedGroundstation',
+       id='selectedGroundstation',
+       ng-options='station.name as station.name for station in allocator.groundstations',
+       ng-change='allocator.getSegments(selectedSatellite, selectedGroundstation)')
+
+    .form-group
+      label(for='selectedSatellite') Satellite
+      select.form-control(ng-model='selectedSatellite',
+      id='selectedSatellite',
+      ng-options='satellite._id as satellite.name for satellite in allocator.availableSatellites',
+      ng-change='allocator.getSegments(selectedSatellite, selectedGroundstation)')
+
+  table.table.table-striped
+    thead
+      th ID
+      th Start
+      th End
+      th Assigned to
+      th Actions
+    tbody(ng-repeat="segment in allocator.segments")
+      tr
+        td {{ segment._id }}
+        td {{ segment.startTime | date:'yyyy-MM-dd HH:mm:ss Z' }}
+        td {{ segment.endTime | date:'yyyy-MM-dd HH:mm:ss Z' }}
+        td {{ segment.assignedToSatId }}
+        td
+          a.btn.btn-primary(ng-show='!segment.assignedToSatId',
+           ng-click='allocator.assignSegment(selectedSatellite, segment._id)')
+            | Assign
+          a.btn.btn-danger(ng-show='segment.assignedToSatId',
+           ng-click='allocator.unassignSegment(segment._id)')
+            | Unassign
+
+footer

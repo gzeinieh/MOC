@@ -1,0 +1,42 @@
+navbar
+
+.container-fluid
+  h1.page-header New Command
+  form(ng-submit="submitCommand(newCommand)")
+    .form-group
+      label(for="satellite") Satellite
+      select.form-control(ng-model="command.satellite" id="satellite" ng-options="satellite._id as satellite.name for satellite in newCommand.availableSatellites")
+    
+    .form-group
+      label(for="unit") Unit
+      select.form-control(type="string" id="unit" ng-model="newCommand.unit" 
+        ng-options="unit as unit for unit in newCommand.units")
+        
+    .form-group
+      label(for="unitCommand") Command
+      select.form-control(type="string" id="unitCommand" ng-model="newCommand.body" 
+        ng-options="command as command for command in newCommand.unitCommands[newCommand.unit]")
+        
+    .form-group
+      input.btn.btn-primary(type="submit")
+
+.container-fluid
+  h1.page-header My Commands
+  table.table.table-striped
+    thead
+      th Command
+      th Status
+      th Submitted By
+      th Approved By
+      th Scheduled Station
+      th Estimated Send
+    tbody(ng-repeat="command in newCommand.myCommands")
+      tr
+        td {{command.body}}
+        td {{command.status}}
+        td {{command.User.name}}
+        td {{command.approvedBy}}
+        td {{command.scheduledStation}}
+        td {{command.scheduledSendTime}}
+
+footer

@@ -1,0 +1,102 @@
+navbar
+
+.container-fluid
+  h1.page-header Health Monitoring
+  h3.page-header Pick a Mission then a Satellite
+
+  form(ng-submit="checkMission()")
+    .form-group
+      label(for="mission") Mission
+      select.form-control(  ng-model="selectedMission" id="mission" ng-options="mission as mission.name for mission in missions")
+      
+      
+  form(ng-submit="checkMission()")
+    .form-group
+      label(for="satellite") Satellite
+      select.form-control(  ng-model="selectedSatellite" id="satellite" ng-options="satellite as satellite.name for satellite in satellites")
+      
+  form(ng-submit="checkMission()")
+    .form-group
+      label(for="range") Data Range (# of data points to be used)
+      <input type='range', name='range', ng-model='range', min='{{minRange}}', max='{{maxRange}}', step='{{step}}'/>
+      {{range}}
+      
+      
+
+
+      
+    .form-group
+        input.btn.btn-primary(type="submit")
+      
+   h3 Sensors Status
+
+   ul
+  li(ng-repeat='sensor in sensors')
+    | {{ sensor.Sensor_type.name }}
+    .alert(ng-class="{'alert-danger': sensor.valToCheck > sensor.max_threshold || sensor.valToCheck < sensor.min_threshold, 'alert-success': sensor.valToCheck < sensor.max_threshold && sensor.valToCheck > sensor.min_threshold, 'alert-warning': (sensor.valToCheck -5 < sensor.min_threshold) || (sensor.valToCheck > sensor.max_threshold -5)}")
+        div(ng-show='sensor.valToCheck < sensor.max_threshold && sensor.valToCheck > sensor.min_threshold')
+            | {{sensor.Sensor_type.name}} is good, Last value is {{sensor.valToCheck}}
+
+        div(ng-show='sensor.valToCheck > sensor.max_threshold || sensor.valToCheck < sensor.min_threshold')
+            | {{sensor.Sensor_type.name}} is bad, Last value is {{sensor.valToCheck}}
+
+
+        Sensor Max Threshold: 
+        <input type="text" ng-model="sensor.max_threshold" class="form-controll"/>
+        Sensor Min Threshold:
+        <input type="text" ng-model="sensor.min_threshold" class="form-controll"/>
+        
+    
+    
+   h4 {{submitMSG}}
+   form(ng-submit="updateThresholds ()")      
+    .form-group
+    input.btn.btn-primary(type="submit")
+    
+   
+                
+   h3 Sensors Data
+   h5 Last 20 raw data points 
+   
+   form(ng-submit="checkMission2()")      
+    .form-group
+    input.btn.btn-primary(type="submit")
+    
+    ul
+  li(ng-repeat='sensor in sensorData')
+    table(style='width:100%')
+      tr(ng-if='sensor[0].x_value')
+        th SatelliteId
+        th SensorId
+        th x_value
+        th y_value
+        th z_value
+      tr(ng-if='sensor[0].sensorReading')
+        th SatelliteId
+        th SensorId
+        th sensorReading
+      tr(ng-if='sensor[0].sensorReading', ng-repeat='line in sensor')
+        td {{line.SatelliteId}}
+        td {{line.SensorId}}
+        td {{line.sensorReading}}
+      tr(ng-if='sensor[0].x_value', ng-repeat='line in sensor')
+        td {{line.SatelliteId}}
+        td {{line.SensorId}}
+        td {{line.x_value}}
+        td {{line.y_value}}
+        td {{line.z_value}}
+        
+   h3 Sensors Visualization
+   
+   div(ng-if= 'visual > 0')
+    h4 {{reCheckMSG}}
+   
+   form(ng-submit="dataVisualization()")      
+    .form-group
+    input.btn.btn-primary(type="submit")
+    
+    div(ng-if='visual > 0',fusioncharts='', width='600', height='400', type='msline', chart='{{attrsAcc793}}', categories='{{categoriesAcc793}}', trendlines='{{trendlinesAcc793}}',dataset='{{datasetAcc793}}')
+    
+    div(ng-if='visual > 0',fusioncharts='', width='600', height='400', type='msline', chart='{{attrsMag3100}}', categories='{{categoriesMag3100}}',trendlines='{{trendlinesMag3100}}', dataset='{{datasetMag3100}}')
+    
+footer

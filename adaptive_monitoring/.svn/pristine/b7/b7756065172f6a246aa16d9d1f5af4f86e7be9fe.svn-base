@@ -1,0 +1,27 @@
+navbar
+
+h1.page-header Manage Satellites
+.container-fluid
+  // This panel is just for reference, remove it later.
+  //.panel
+  //  label Select Satellite:
+  //  select.form-control(ng-model="satmanager.satellite" id="satellite" ng-options="satellite as satellite.name for satellite in satmanager.availableSatellites")
+  .panel
+    label All Satellites
+     ul.list-group
+       li.list-group-item(ng-repeat='satellite in satellites')
+        strong {{satellite.name}}
+         br
+         span.text-muted Satellite ID: {{satellite._id}} &nbsp;
+         a.trash(ng-click='deleteSatellite(satellite)')
+           span.glyphicon.glyphicon-trash.pull-right
+         a.pencil(ng-click='edit(satellite)')
+           span.glyphicon.glyphicon-pencil.pull-right &nbsp;
+
+  // This panel just for reference, remove it later
+  //.panel
+  //  label Button Examples
+  //    ul.list-group
+  //      button.btn.btn-primary(type='button') Test
+  //      input.btn.btn-primary(type="submit")
+footer

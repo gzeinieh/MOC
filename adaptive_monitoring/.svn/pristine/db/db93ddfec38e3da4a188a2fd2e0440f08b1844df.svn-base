@@ -1,0 +1,15 @@
+0000000000000000000000000000000000000000 f642b723487ddbff93ac2d781d9c952353a705ef Brett Jackson <brett@brettjackson.org> 1446413914 -0600	clone: from git@github.com:illinicubesat/missioncontrol.git
+f642b723487ddbff93ac2d781d9c952353a705ef ddc672477b4a9f45885980339b569cfe49211d4e Brett Jackson <brett@brettjackson.org> 1446416393 -0600	merge sattrack: Fast-forward
+ddc672477b4a9f45885980339b569cfe49211d4e c106a644186f518c33cf5450772e1e99edc5944a Brett Jackson <brett@brettjackson.org> 1446417702 -0600	commit: filter duplicate points on map
+c106a644186f518c33cf5450772e1e99edc5944a 46dccfa985a259a237a956d3143bd7f54658f913 Brett Jackson <brett@brettjackson.org> 1446508800 -0600	pull: Fast-forward
+46dccfa985a259a237a956d3143bd7f54658f913 a53a4c2bb20f7523baa4bc7554d83f6da49e5c92 Brett Jackson <brett@brettjackson.org> 1446509855 -0600	commit: initialize locations in client map
+a53a4c2bb20f7523baa4bc7554d83f6da49e5c92 6e96a91d1c97c1e18821244b8ee406d0c13770fa Brett Jackson <brett@brettjackson.org> 1446517700 -0600	commit: time api for locations. for ten minutes
+6e96a91d1c97c1e18821244b8ee406d0c13770fa 6ebf5d2f5c85126e55079192940cc761f710307e Brett Jackson <brett@brettjackson.org> 1446620984 -0600	commit: approve command works
+6ebf5d2f5c85126e55079192940cc761f710307e d3a4995af55f56b9760fd63af41ac30386ecd99e Brett Jackson <brett@brettjackson.org> 1446621398 -0600	commit: add more satellites
+d3a4995af55f56b9760fd63af41ac30386ecd99e fbb2144c90824c2308b9e59c6f4edddb4740292a Brett Jackson <brett@brettjackson.org> 1447614804 -0600	pull: Fast-forward
+fbb2144c90824c2308b9e59c6f4edddb4740292a ab390cf1840e9abae299e9b5caccc9210833e422 Brett Jackson <brett@brettjackson.org> 1447802327 -0600	commit: change update to 30s
+ab390cf1840e9abae299e9b5caccc9210833e422 225acd1a3b0762d06ab4660b3e846ffa246c0bff Brett Jackson <brett@brettjackson.org> 1447816270 -0600	commit: switching to segment model (not complete)
+225acd1a3b0762d06ab4660b3e846ffa246c0bff 0431b6e211bc9cc425a6a02fe6a2b8917a505699 Brett Jackson <brett@brettjackson.org> 1447837752 -0600	commit: start flow change
+0431b6e211bc9cc425a6a02fe6a2b8917a505699 60e075d266a4bfa60017c68310a440f167e2bf19 Brett Jackson <brett@brettjackson.org> 1447839241 -0600	commit: changed command entry flow
+60e075d266a4bfa60017c68310a440f167e2bf19 0352bf24c4df702c3a4c3282e9429727c1cebfdc Brett Jackson <brett@brettjackson.org> 1449451089 -0600	commit: lotsa small changes
+0352bf24c4df702c3a4c3282e9429727c1cebfdc 53a4e54d4da7fbbd2557b2fd918bab10e877715a Brett Jackson <brett@brettjackson.org> 1449451266 -0600	commit (merge): resolve merge conflicts

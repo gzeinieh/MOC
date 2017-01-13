@@ -1,0 +1,36 @@
+/**
+ * Sensor model events
+ */
+
+'use strict';
+
+var EventEmitter = require('events').EventEmitter;
+var Sensor = require('../../sqldb').Sensor;
+var SensorEvents = new EventEmitter();
+
+// Set max event listeners (0 == unlimited)
+SensorEvents.setMaxListeners(0);
+
+// Model events
+var events = {
+  'afterCreate': 'save',
+  'afterUpdate': 'save',
+  'afterDestroy': 'remove'
+};
+
+// Register the event emitter to the model events
+for (var e in events) {
+  var event = events[e];
+  Sensor.hook(e, emitEvent(event));
+}
+
+function emitEvent(event) {
+  return function(doc, options, done) {
+    SensorEvents.emit(event + ':' + doc._id, doc);
+    SensorEvents.emit(event, doc);
+    SensorEvents.emit(event + 'satellite/' + ':' + doc.SatelliteId, doc);
+    done(null);
+  }
+}
+
+module.exports = SensorEvents;

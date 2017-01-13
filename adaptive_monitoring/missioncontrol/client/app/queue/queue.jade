@@ -1,0 +1,27 @@
+navbar
+  
+.container-fluid
+  h1.page-header Queue
+  table.table.table-striped
+    thead
+      th Command
+      th Status
+      th Submitted By
+      th Approved By
+      th Scheduled Station
+      th Estimated Send
+      th Segment ID
+      th Actions
+    tbody(ng-repeat="command in queue.commands")
+      tr
+        td {{command.body}}
+        td {{command.status}}
+        td {{command.User.name}}
+        td {{command.approvedBy.name}}
+        td {{command.scheduledStation}}
+        td {{command.scheduledSendTime}}
+        td {{command.SegmentId}}
+        td
+          a.btn.btn-danger(ng-click='queue.unscheduleCommand(command)') Unschedule
+
+footer

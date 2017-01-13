@@ -1,0 +1,147 @@
+'use strict';
+
+var app = require('../..');
+var request = require('supertest');
+
+var newRadio;
+
+describe('Radio API:', function() {
+
+  describe('GET /api/radios', function() {
+    var radios;
+
+    beforeEach(function(done) {
+      request(app)
+        .get('/api/radios')
+        .expect(200)
+        .expect('Content-Type', /json/)
+        .end(function(err, res) {
+          if (err) {
+            return done(err);
+          }
+          radios = res.body;
+          done();
+        });
+    });
+
+    it('should respond with JSON array', function() {
+      radios.should.be.instanceOf(Array);
+    });
+
+  });
+
+  describe('POST /api/radios', function() {
+    beforeEach(function(done) {
+      request(app)
+        .post('/api/radios')
+        .send({
+          name: 'New Radio',
+          info: 'This is the brand new radio!!!'
+        })
+        .expect(201)
+        .expect('Content-Type', /json/)
+        .end(function(err, res) {
+          if (err) {
+            return done(err);
+          }
+          newRadio = res.body;
+          done();
+        });
+    });
+
+    it('should respond with the newly created radio', function() {
+      newRadio.name.should.equal('New Radio');
+      newRadio.info.should.equal('This is the brand new radio!!!');
+    });
+
+  });
+
+  describe('GET /api/radios/:id', function() {
+    var radio;
+
+    beforeEach(function(done) {
+      request(app)
+        .get('/api/radios/' + newRadio._id)
+        .expect(200)
+        .expect('Content-Type', /json/)
+        .end(function(err, res) {
+          if (err) {
+            return done(err);
+          }
+          radio = res.body;
+          done();
+        });
+    });
+
+    afterEach(function() {
+      radio = {};
+    });
+
+    it('should respond with the requested radio', function() {
+      radio.name.should.equal('New Radio');
+      radio.info.should.equal('This is the brand new radio!!!');
+    });
+
+  });
+
+  describe('PUT /api/radios/:id', function() {
+    var updatedRadio
+
+    beforeEach(function(done) {
+      request(app)
+        .put('/api/radios/' + newRadio._id)
+        .send({
+          name: 'Updated Radio',
+          info: 'This is the updated radio!!!'
+        })
+        .expect(200)
+        .expect('Content-Type', /json/)
+        .end(function(err, res) {
+          if (err) {
+            return done(err);
+          }
+          updatedRadio = res.body;
+          done();
+        });
+    });
+
+    afterEach(function() {
+      updatedRadio = {};
+    });
+
+    it('should respond with the updated radio', function() {
+      updatedRadio.name.should.equal('Updated Radio');
+      updatedRadio.info.should.equal('This is the updated radio!!!');
+    });
+
+  });
+
+  describe('DELETE /api/radios/:id', function() {
+
+    it('should respond with 204 on successful removal', function(done) {
+      request(app)
+        .delete('/api/radios/' + newRadio._id)
+        .expect(204)
+        .end(function(err, res) {
+          if (err) {
+            return done(err);
+          }
+          done();
+        });
+    });
+
+    it('should respond with 404 when radio does not exist', function(done) {
+      request(app)
+        .delete('/api/radios/' + newRadio._id)
+        .expect(404)
+        .end(function(err, res) {
+          if (err) {
+            return done(err);
+          }
+          done();
+        });
+    });
+
+  });
+
+});

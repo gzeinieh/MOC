@@ -1,0 +1,272 @@
+/**
+ * Using Rails-like standard naming convention for endpoints.
+ * GET     /api/satellites              ->  index
+ * POST    /api/satellites             ->  create
+ * GET     /api/satellites/:id         ->  show
+ * PUT     /api/satellites/:id         ->  update
+ * DELETE  /api/satellites/:id       ->  destroy
+ */
+
+'use strict';
+
+var _ = require('lodash');
+const async = require('async');
+var sqldb = require('../../sqldb');
+var Satellite = sqldb.Satellite;
+import * as tracker from 'tracker';
+const Segment = sqldb.Segment;
+const Pass = sqldb.Pass;
+const Groundstation = sqldb.Groundstation;
+
+function handleError(res, statusCode) {
+  statusCode = statusCode || 500;
+  return function(err) {
+    res.status(statusCode).send(err);
+  };
+}
+
+function responseWithResult(res, statusCode) {
+  statusCode = statusCode || 200;
+  return function(entity) {
+    if (entity) {
+      res.status(statusCode).json(entity);
+    }
+  };
+}
+
+function handleEntityNotFound(res) {
+  return function(entity) {
+    if (!entity) {
+      res.status(404).end();
+      return null;
+    }
+    return entity;
+  };
+}
+
+function saveUpdates(updates) {
+  return function(entity) {
+    return entity.updateAttributes(updates)
+      .then(function(updated) {
+        return updated;
+      });
+  };
+}
+
+function removeEntity(res) {
+  return function(entity) {
+    if (entity) {
+      return entity.destroy()
+        .then(function() {
+          res.status(204).end();
+        });
+    }
+  };
+}
+
+function createSegments(pass, satellite, groundstation) {
+  return new Promise(function(resolve, reject) {
+    let segments = [];
+    let startTime = pass.dataValues.startTime;
+    let endTime = pass.dataValues.endTime;
+
+    let pstart = startTime;
+
+    // console.log(pass);
+
+    while (new Date(pstart.getTime() + 10*1000) < endTime) {
+      let segment = {
+        startTime: pstart,
+        endTime: new Date(pstart.getTime() + 10*1000),
+        PassId: pass._id,
+        SatelliteId: satellite,
+        GroundstationId: groundstation
+      };
+      if (new Date(pstart.getTime() + 10*1000) < endTime) {
+        segments.push(segment);
+        pstart = new Date(pstart.getTime() + 10*1000);
+      }
+    }
+
+    Segment.bulkCreate(segments)
+      .then(resolve)
+      .catch(resolve);
+  });
+}
+
+// Gets a list of Satellites
+exports.index = function(req, res) {
+  Satellite.findAll()
+    .then(responseWithResult(res))
+    .catch(handleError(res));
+};
+
+// Gets a single Satellite from the DB
+exports.show = function(req, res) {
+  Satellite.find({
+    where: {
+      _id: req.params.id
+    }
+  })
+    .then(handleEntityNotFound(res))
+    .then(responseWithResult(res))
+    .catch(handleError(res));
+};
+
+exports.segments = function(req, res) {
+  let gstation = req.query.groundstation;
+
+  Groundstation.find({
+    where: {
+      name: gstation
+    }
+  }).then(groundstation => {
+    gstation = groundstation;
+    Satellite.find({
+      where: {
+        _id: req.params.id
+      }
+    })
+      .then(handleEntityNotFound(res))
+      .then((satellite) => {
+        return new Promise(function(resolve, reject) {
+          let passes = tracker.getSatellitePassovers(satellite.dataValues.name, gstation.dataValues.name, 10);
+          passes = _(passes)
+            .map(pass => {
+              pass.GroundstationId = groundstation._id;
+              return pass;
+            })
+            .value();
+          resolve({passes: passes, satellite: satellite});
+        });
+      })
+      .then((obj) => {
+        let passes = obj.passes;
+        let satellite = obj.satellite;
+        return new Promise(function(resolve, reject) {
+          async.each(passes, (pass, callback) => {
+            Pass.create(pass)
+              .then(passm => {
+                createSegments(passm, satellite.dataValues._id, gstation.dataValues._id)
+                  .then(() => callback());
+              })
+          }, () => {
+            Segment.findAll({
+              where: {
+                startTime: {
+                  $gt: Date.now()
+                },
+                SatelliteId: satellite._id,
+                GroundstationId: gstation.dataValues._id
+              }
+            })
+            .then(segments => {
+              resolve(segments);
+            })
+            .reject(err => reject(err));
+          });
+        });
+      })
+      .then(responseWithResult(res))
+      .catch(handleError(res));
+  });
+
+
+};
+
+exports.currentLocation = function(req, res) {
+  Satellite.find({
+    where: {
+      _id: req.params.id
+    }
+  })
+  // .then(handleEntityNotFound(res))
+  .then((satellite) => {
+    let locs = tracker.getSatelliteCurrentLocation(satellite.name);
+    console.log(locs);
+    return locs;
+  })
+  .then(responseWithResult(res))
+  .catch(handleError(res));
+};
+
+exports.futureLocation = function(req, res) {
+  let time = Math.round(new Date().getTime() / 1000);
+  let interval = (req.query.interval || 100) * 60;
+  Satellite.find({
+    where: {
+      _id: req.params.id
+    }
+  })
+  .then(handleEntityNotFound(res))
+  .then((satellite) => tracker.getSatelliteLocation(satellite.name, time + interval))
+  .then(responseWithResult(res))
+  .catch(handleError(res));
+}
+
+exports.locations = function(req, res) {
+  let time = Math.round(new Date().getTime() / 1000);
+
+  let interval = (req.query.interval || 100) * 60;
+
+  Satellite.find({
+    where: {
+      _id: req.params.id
+    }
+  })
+    .then(handleEntityNotFound(res))
+    .then((satellite) => tracker.getSatelliteLocations(satellite.name, time, time + interval))
+    .then(responseWithResult(res))
+    .catch(handleError(res));
+};
+
+exports.assignedSegments = function assignedSegments(req, res) {
+  let station = req.query.groundstation;
+  Segment.findAll({
+    where: {
+      assignedToSatId: req.params.id,
+      startTime: {
+        $gt: Date.now()
+      },
+      GroundstationId: station
+    }
+  })
+  .then(handleEntityNotFound(res))
+  .then(responseWithResult(res))
+  .catch(handleError(res));
+};
+
+// Creates a new Satellite in the DB
+exports.create = function(req, res) {
+  Satellite.create(req.body)
+    .then(responseWithResult(res, 201))
+    .catch(handleError(res));
+};
+
+// Updates an existing Satellite in the DB
+exports.update = function(req, res) {
+  if (req.body._id) {
+    delete req.body._id;
+  }
+  Satellite.find({
+    where: {
+      _id: req.params.id
+    }
+  })
+    .then(handleEntityNotFound(res))
+    .then(saveUpdates(req.body))
+    .then(responseWithResult(res))
+    .catch(handleError(res));
+};
+
+// Deletes a Satellite from the DB
+exports.destroy = function(req, res) {
+  Satellite.find({
+    where: {
+      _id: req.params.id
+    }
+  })
+    .then(handleEntityNotFound(res))
+    .then(removeEntity(res))
+    .catch(handleError(res));
+};

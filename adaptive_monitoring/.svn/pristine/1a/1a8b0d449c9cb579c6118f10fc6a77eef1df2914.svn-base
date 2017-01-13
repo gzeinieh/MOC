@@ -1,0 +1,4 @@
+# pack-refs with: peeled fully-peeled 
+f642b723487ddbff93ac2d781d9c952353a705ef refs/remotes/origin/master
+b89c4688bc79244312755a7f87be3aa2b927feb8 refs/remotes/origin/sattrack
+b87ad1991097afd4a33162a17f965dd519489597 refs/remotes/origin/sattracker

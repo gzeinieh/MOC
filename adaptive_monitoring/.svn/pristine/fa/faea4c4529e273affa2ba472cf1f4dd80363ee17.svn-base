@@ -1,0 +1,97 @@
+'use strict';
+
+var proxyquire = require('proxyquire').noPreserveCache();
+
+var radioCtrlStub = {
+  index: 'radioCtrl.index',
+  show: 'radioCtrl.show',
+  create: 'radioCtrl.create',
+  update: 'radioCtrl.update',
+  destroy: 'radioCtrl.destroy'
+};
+
+var routerStub = {
+  get: sinon.spy(),
+  put: sinon.spy(),
+  patch: sinon.spy(),
+  post: sinon.spy(),
+  delete: sinon.spy()
+};
+
+// require the index with our stubbed out modules
+var radioIndex = proxyquire('./index.js', {
+  'express': {
+    Router: function() {
+      return routerStub;
+    }
+  },
+  './radio.controller': radioCtrlStub
+});
+
+describe('Radio API Router:', function() {
+
+  it('should return an express router instance', function() {
+    radioIndex.should.equal(routerStub);
+  });
+
+  describe('GET /api/radios', function() {
+
+    it('should route to radio.controller.index', function() {
+      routerStub.get
+        .withArgs('/', 'radioCtrl.index')
+        .should.have.been.calledOnce;
+    });
+
+  });
+
+  describe('GET /api/radios/:id', function() {
+
+    it('should route to radio.controller.show', function() {
+      routerStub.get
+        .withArgs('/:id', 'radioCtrl.show')
+        .should.have.been.calledOnce;
+    });
+
+  });
+
+  describe('POST /api/radios', function() {
+
+    it('should route to radio.controller.create', function() {
+      routerStub.post
+        .withArgs('/', 'radioCtrl.create')
+        .should.have.been.calledOnce;
+    });
+
+  });
+
+  describe('PUT /api/radios/:id', function() {
+
+    it('should route to radio.controller.update', function() {
+      routerStub.put
+        .withArgs('/:id', 'radioCtrl.update')
+        .should.have.been.calledOnce;
+    });
+
+  });
+
+  describe('PATCH /api/radios/:id', function() {
+
+    it('should route to radio.controller.update', function() {
+      routerStub.patch
+        .withArgs('/:id', 'radioCtrl.update')
+        .should.have.been.calledOnce;
+    });
+
+  });
+
+  describe('DELETE /api/radios/:id', function() {
+
+    it('should route to radio.controller.destroy', function() {
+      routerStub.delete
+        .withArgs('/:id', 'radioCtrl.destroy')
+        .should.have.been.calledOnce;
+    });
+
+  });
+
+});

@@ -1,0 +1,22 @@
+navbar
+  
+.container-fluid
+  h1.page-header Commands Log
+  table.table.table-striped
+    thead
+      th Command
+      th Status
+      th Submitted By
+      th Approved By
+      th Scheduled Station
+      th Estimated Send
+    tbody(ng-repeat="command in commandlog.commands")
+      tr
+        td {{command.body}}
+        td {{command.status}}
+        td {{command.User.name}}
+        td {{command.approvedBy}}
+        td {{command.scheduledStation}}
+        td {{command.scheduledSendTime}}
+
+footer

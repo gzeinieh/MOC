@@ -1,0 +1,68 @@
+navbar
+.container-fluid
+  
+  .container-fluid
+    h1.page-header New Command
+    form(ng-submit="tracker.submitCommand(tracker.satellite, tracker.unit, tracker.unitCommand)")
+      .form-group
+        label(for="satellite") Satellite
+        select.form-control(ng-model="tracker.satellite" id="satellite" ng-options="satellite as satellite.name for satellite in tracker.availableSatellites")
+      
+      .form-group
+        label(for="unit") Unit
+        select.form-control(type="string" id="unit" ng-model="tracker.unit" 
+          ng-options="unit as unit for unit in tracker.satellite.units")
+          
+      .form-group
+        label(for="unitCommand") Command
+        select.form-control(type="string" id="unitCommand" ng-model="tracker.unitCommand" 
+          ng-options="command as command for command in tracker.satellite.availableCommands[tracker.unit]")
+          
+      .form-group
+        input.btn.btn-primary(type="submit")
+
+  h1.page-header Assigned Segments
+  form.form-inline
+    .form-group
+      label(for='selectedGroundstation') Ground Station
+      select.form-control(ng-model='selectedGroundstation',
+       id='selectedGroundstation',
+       ng-options='station._id as station.name for station in tracker.groundstations',
+       ng-change='tracker.getAssignedSegments(selectedSatellite, selectedGroundstation)')
+
+    .form-group
+      label(for='selectedSatellite') Satellite
+      select.form-control(ng-model='selectedSatellite',
+      id='selectedSatellite',
+      ng-options='satellite._id as satellite.name for satellite in tracker.availableSatellites',
+      ng-change='tracker.getAssignedSegments(selectedSatellite, selectedGroundstation)')
+
+  table.table.table-striped
+    thead
+      th Start
+      th End
+      th Segment ID
+    tbody(ng-repeat="pass in tracker.segments")
+      tr
+        td {{ pass.startTime | date:'yyyy-MM-dd HH:mm:ss Z' }}
+        td {{ pass.endTime | date:'yyyy-MM-dd HH:mm:ss Z'}}
+        td {{ pass._id }}
+
+  h1.page-header Unscheduled Commands
+  table.table.table-striped
+    thead
+      th Command
+      th Submitted by
+      th Actions
+    tbody(ng-repeat="command in tracker.unscheduledCommands")
+      tr
+        td {{ command.body }}
+        td {{ command.User.name}}
+        td
+          form.form-inline(ng-submit='tracker.scheduleCommand(command, segNum)')
+            .form-group
+              input(type='number', ng-model='segNum', placeholder="Segment ID")
+            .form-group
+              input.btn.btn-primary(type='submit' id='submit', value='Schedule')
+
+footer

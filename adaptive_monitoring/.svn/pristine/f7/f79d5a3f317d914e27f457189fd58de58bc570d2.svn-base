@@ -1,0 +1,20 @@
+navbar
+  
+.container-fluid
+  h1.page-header Commands to Approve
+  table.table.table-striped
+    thead
+      th Command
+      th Status
+      th Submitted By
+      th Actions
+    tbody(ng-repeat="command in approval.commands")
+      tr
+        td {{command.body}}
+        td {{command.status}}
+        td {{command.User.name}}
+        td
+          a.btn.btn-success(ng-click="approval.approveCommand(command)") Approve
+          a.btn.btn-danger(ng-click="approval.approveCommand(command)") Deny
+
+footer

@@ -1,0 +1,72 @@
+/**
+ * Sequelize initialization module
+ */
+
+'use strict';
+
+import path from 'path';
+import config from '../config/environment';
+import Sequelize from 'sequelize';
+
+var db = {
+  Sequelize: Sequelize,
+  sequelize: new Sequelize(config.sequelize.uri, config.sequelize.options)
+};
+
+// Insert models below
+db.Bus = db.sequelize.import('../api/bus/bus.model');
+db.Command = db.sequelize.import('../api/command/command.model');
+db.Command_status = db.sequelize.import('../api/command_status/command_status.model');
+db.Groundstation = db.sequelize.import('../api/groundstation/groundstation.model');
+db.Groundstation_radio = db.sequelize.import('../api/groundstation_radio/groundstation_radio.model');
+db.Mission = db.sequelize.import('../api/mission/mission.model');
+db.Pass = db.sequelize.import('../api/pass/pass.model');
+db.Payload = db.sequelize.import('../api/payload/payload.model');
+db.Satellite = db.sequelize.import('../api/satellite/satellite.model');
+db.Satellite_radio = db.sequelize.import('../api/satellite_radio/satellite_radio.model');
+db.Segment = db.sequelize.import('../api/segment/segment.model');
+db.Sensor = db.sequelize.import('../api/sensor/sensor.model');
+db.Sensor_type = db.sequelize.import('../api/sensor_type/sensor_type.model');
+db.Threshold = db.sequelize.import('../api/threshold/threshold.model');
+db.User = db.sequelize.import('../api/user/user.model');
+db.Acc793 = db.sequelize.import('../api/sensor/sensor_model_data/acc793/acc793.model');
+db.Mag3110 = db.sequelize.import('../api/sensor/sensor_model_data/mag3110/mag3110.model');
+
+// Database Relations
+
+// 1:1
+
+//1:M
+db.Bus.hasMany(db.Satellite);
+db.Command.hasMany(db.Command_status);
+db.Groundstation.hasMany(db.Groundstation_radio);
+db.Mission.hasMany(db.Pass);
+db.Mission.hasMany(db.Satellite);
+db.Pass.hasMany(db.Segment);
+db.Satellite.hasMany(db.Payload);
+db.Satellite.hasMany(db.Sensor);
+db.Satellite.hasMany(db.Satellite_radio);
+db.Satellite.hasMany(db.Acc793);
+db.Satellite.hasMany(db.Mag3110);
+db.User.hasMany(db.Command_status);
+db.Sensor.hasMany(db.Threshold);
+db.Sensor_type.hasMany(db.Sensor);
+db.Command_status.belongsTo(db.User, {as: 'ApprovedByUser'});
+
+// N:M
+db.User.belongsToMany(db.Mission, {through: 'User_Mission'});
+db.Mission.belongsToMany(db.User, {through: 'User_Mission'});
+db.Mission.belongsToMany(db.Groundstation, {through: 'Mission_Groundstation'});
+db.Groundstation.belongsToMany(db.Mission, {through: 'Mission_Groundstation'});
+db.Segment.belongsToMany(db.Command, {through: 'Segment_Command'});
+db.Command.belongsToMany(db.Segment, {through: 'Segment_Command'});
+db.Command.belongsToMany(db.Bus, {through: 'Bus_Command'});
+db.Bus.belongsToMany(db.Command, {through: 'Bus_Command'});
+
+// Sensor Data Table Relations 1:M
+// example syntax for each sensor
+// db.Sensor.hasMany(db."sensor_data_SensorModel");
+db.Sensor.hasMany(db.Acc793);
+db.Sensor.hasMany(db.Mag3110);
+
+module.exports = db;

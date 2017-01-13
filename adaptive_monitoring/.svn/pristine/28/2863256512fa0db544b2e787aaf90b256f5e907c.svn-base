@@ -1,0 +1,16 @@
+'use strict';
+
+module.exports = function(sequelize, DataTypes) {
+  return sequelize.define('Sensor', {
+    _id: {
+      type: DataTypes.INTEGER,
+      allowNull: false,
+      primaryKey: true,
+      autoIncrement: true
+    },
+	min_threshold: DataTypes.INTEGER,
+	max_threshold: DataTypes.INTEGER,
+	createdAt: DataTypes.DATE,
+	updatedAt: DataTypes.DATE,
+  });
+};

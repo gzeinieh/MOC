@@ -1,0 +1,63 @@
+{
+  "name": "karma-spec-reporter",
+  "version": "0.0.22",
+  "description": "A Karma plugin. Report all spec-results to console (like mocha's spec reporter).",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git://github.com/mlex/karma-spec-reporter.git"
+  },
+  "keywords": [
+    "karma-plugin",
+    "reporter"
+  ],
+  "author": {
+    "name": "Michael Lex",
+    "email": "michael.lex@codecentric.de"
+  },
+  "dependencies": {
+    "colors": "~0.6.0"
+  },
+  "peerDependencies": {
+    "karma": ">=0.9"
+  },
+  "license": "MIT",
+  "gitHead": "7c5dce5befe30f321950745b6fa2e785f1e1f3ff",
+  "bugs": {
+    "url": "https://github.com/mlex/karma-spec-reporter/issues"
+  },
+  "homepage": "https://github.com/mlex/karma-spec-reporter#readme",
+  "_id": "karma-spec-reporter@0.0.22",
+  "_shasum": "1bbf87b397d1e046235f95edd0d14d4e61b0caa6",
+  "_from": "karma-spec-reporter@>=0.0.20 <0.1.0",
+  "_npmVersion": "2.11.2",
+  "_nodeVersion": "0.12.5",
+  "_npmUser": {
+    "name": "tmcgee123",
+    "email": "mcgeehonstg@gmail.com"
+  },
+  "dist": {
+    "shasum": "1bbf87b397d1e046235f95edd0d14d4e61b0caa6",
+    "tarball": "http://registry.npmjs.org/karma-spec-reporter/-/karma-spec-reporter-0.0.22.tgz"
+  },
+  "maintainers": [
+    {
+      "name": "hdavidzhu",
+      "email": "hdavidzhu@gmail.com"
+    },
+    {
+      "name": "mlex",
+      "email": "mich.lex@gmail.com"
+    },
+    {
+      "name": "tmcgee123",
+      "email": "mcgeehonstg@gmail.com"
+    }
+  ],
+  "directories": {},
+  "_resolved": "https://registry.npmjs.org/karma-spec-reporter/-/karma-spec-reporter-0.0.22.tgz",
+  "readme": "ERROR: No README data found!"
+}

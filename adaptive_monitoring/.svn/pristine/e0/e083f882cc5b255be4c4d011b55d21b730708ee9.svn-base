@@ -1,0 +1,37 @@
+/**
+ * Sequelize initialization module
+ */
+
+'use strict';
+
+import path from 'path';
+import config from '../config/environment';
+import Sequelize from 'sequelize';
+
+var db = {
+  Sequelize: Sequelize,
+  sequelize: new Sequelize(config.sequelize.uri, config.sequelize.options)
+};
+
+// Insert models below
+db.Segment = db.sequelize.import('../api/segment/segment.model');
+db.Mission = db.sequelize.import('../api/mission/mission.model');
+db.Pass = db.sequelize.import('../api/pass/pass.model');
+db.Groundstation = db.sequelize.import('../api/groundstation/groundstation.model');
+db.Satellite = db.sequelize.import('../api/satellite/satellite.model');
+db.Response = db.sequelize.import('../api/response/response.model');
+db.User = db.sequelize.import('../api/user/user.model');
+db.Command = db.sequelize.import('../api/command/command.model');
+
+db.Command.belongsTo(db.User);
+db.Command.belongsTo(db.Satellite);
+db.Response.belongsTo(db.Command);
+
+db.Command.belongsTo(db.User, {as: 'approvedBy'});
+db.Pass.hasMany(db.Segment, {as: 'segments'});
+db.Command.belongsTo(db.Segment);
+db.Segment.belongsTo(db.Satellite);
+db.Segment.belongsTo(db.Satellite, {as: 'assignedToSat'});
+db.Segment.belongsTo(db.Groundstation);
+
+module.exports = db;

@@ -1,0 +1,159 @@
+/**
+ * Populate DB with sample data on server start
+ * to disable, edit config/environment/index.js, and set `seedDB: false`
+ */
+
+'use strict';
+import sqldb from '../sqldb';
+const User = sqldb.User;
+const Command = sqldb.Command;
+const Satellite = sqldb.Satellite;
+const Groundstation = sqldb.Groundstation;
+const Response = sqldb.Response;
+const Segment = sqldb.Segment;
+
+let availableCommands = {
+  magnetometer: [
+    'calibrate',
+    'refresh'
+  ],
+  photosensor: [
+    'reduce sensitivity',
+    'increase sensitivity'
+  ]
+};
+
+let units = ["magnetometer", "photosensor"];
+
+
+
+
+Groundstation.sync()
+.then(() => {
+  return Groundstation.destroy({where: {}});
+})
+.then(() => {
+  Segment.sync()
+    .then(() => {
+      return Segment.destroy({where: {}})
+    });
+
+  Groundstation.bulkCreate([
+    {
+      _id: 1,
+      name: 'UIUC',
+      longitude: -88,
+      latitude: 37
+    },
+    {
+      _id: 2,
+      name: 'Wallops',
+      longitude: -80.4250,
+      latitude: 37.2250
+    },
+    {
+      _id: 3,
+      name: 'VT',
+      longitude: -75.4667,
+      latitude: 37.85
+    }
+  ]);
+})
+.then(() => {
+  Satellite.sync()
+    .then(() => {
+      return Satellite.destroy({ where: {} });
+    })
+    .then(() => {
+      Satellite.bulkCreate([
+        {
+          _id: 1,
+          name: 'HAMSAT',
+          radioType: '2.6 GHz',
+          units: JSON.stringify(units),
+          availableCommands: JSON.stringify(availableCommands)
+        },
+        {
+          _id: 2,
+          name: 'PCSAT',
+          radioType: '2.6 GHz',
+          units: JSON.stringify(units),
+          availableCommands: JSON.stringify(availableCommands)
+        },
+        {
+          _id: 3,
+          name: 'NOAA-15',
+          radioType: '2.6 GHz',
+          units: JSON.stringify(units),
+          availableCommands: JSON.stringify(availableCommands)
+        }
+      ]);
+    })
+})
+.then(() => {
+  User.sync()
+    .then(function() {
+      return User.destroy({ where: {} });
+    })
+    .then(function() {
+      User.bulkCreate([{
+        _id: 1,
+        provider: 'local',
+        name: 'Test User',
+        email: 'test@example.com',
+        password: 'test'
+      }, {
+        _id: 2,
+        provider: 'local',
+        role: 'admin',
+        name: 'Alexander Ghosh',
+        email: 'admin@example.com',
+        password: 'admin'
+      }])
+      .then(function() {
+        console.log('finished populating users');
+
+        User.findOne({where: {}}).then((user) => {
+          Command.sync()
+            .then(function() {
+              return Command.destroy({ where: {} });
+            })
+            .then(function() {
+              Command.bulkCreate([{
+                body: 'Change attitude to [4.0, 2.6, 5.5, 6.7]',
+                status: 'success',
+                UserId: user._id + 1,
+                approvalStatus: 'approved'
+              }, {
+                body: 'Downlink collected data',
+                status: 'failed',
+                UserId: user._id,
+                approvalStatus: 'unapproved'
+              },
+              {
+                body: 'Ping',
+                status: 'pending',
+                UserId: user._id,
+                approvalStatus: 'unapproved'
+              },
+              {
+                body: 'Spy on Russians',
+                status: 'pending',
+                UserId: user._id,
+                approvalStatus: 'unapproved'
+              },
+              {
+                body: 'Reboot at 2015-10-04T19:47:03Z',
+                status: 'pending',
+                UserId: user._id,
+                approvalStatus: 'unapproved'
+              }])
+              .then(function() {
+                console.log('finished populating commands');
+              });
+            });
+        });
+
+      });
+    });
+})

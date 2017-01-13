@@ -1,0 +1,46 @@
+navbar
+
+header#banner.hero-unit
+  .container-fluid
+    h1 Dashboard
+    p.lead Illini Cubesat Dashboard
+
+
+.container-fluid
+  .panel
+    label Satellite:
+    select.form-control(ng-change="main.satChanged()" ng-model="main.selectedSatellite" ng-options="satellite._id as satellite.name for satellite in main.availableSatellites")
+
+  h1.page-header Satellite Tracker
+  .map-container.container-fluid
+    ui-gmap-google-map(center='main.map.center', zoom='main.map.zoom', options='main.map.options')
+      ui-gmap-polyline(path='main.locations', stroke='main.polyline.stroke', fit='true', static='false', geodesic='true')
+      ui-gmap-polyline(path='main.tracedLocs', stroke='main.polyline.stroke2', static='false', geodesic='true')
+      ui-gmap-marker(idKey='main.satMarker.idKey', coords='main.satLoc', options='main.satMarker.options')
+
+
+.container-fluid
+  .row
+    .col-lg-12
+      .div#nextTenCommands(ng-show="main.nextTenCommands")
+      h1.page-header Next 10 Commands
+      table.table.table-striped
+        thead
+          th Command
+          th Status
+          th Submitted By
+          th Approved By
+          th Scheduled Station
+          th Estimated Send
+        tbody(ng-repeat="command in main.nextTenCommands")
+          tr
+            td {{command.body}}
+            td {{command.status}}
+            td {{command.User.name}}
+            td {{command.approvedBy}}
+            td {{command.scheduledStation}}
+            td {{command.scheduledSendTime}}
+
+
+
+footer
